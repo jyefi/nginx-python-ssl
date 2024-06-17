@@ -1,0 +1,23 @@
+services:
+  web:
+    image: python-django:0.8
+    #command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn -c gunicorn_config.py demo.wsgi
+    volumes:
+      - ./app:/app
+    ports:
+      - 8000:8000
+    # env_file:
+    #   - .env
+    
+  nginx:
+    image: nginx-python:0.8
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    volumes:
+      - ./app:/app
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/letsencrypt:/etc/letsencrypt
